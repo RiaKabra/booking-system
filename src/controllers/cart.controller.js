@@ -3,12 +3,24 @@ import HttpStatus from 'http-status-codes';
    export const getUserCart = async(req,res,next) => {
     try{
         const userId = req.user.id; 
-        cart = await getCartbyUserID(userId);
+       const cart = await getCartbyUserID(userId);
         res.status(HttpStatus.OK).json({ message: 'Cart rerieved', cart: cart });
     }
     catch(error)
     {
-        console.error('Error adding book to cart:', error);
+        console.error('Error retrieving cart:', error);
+            next(error);  
+    }
+   }
+   export const getUserOrder = async(req,res,next) => {
+    try{
+        const userId = req.user.id; 
+        const cart = await getCartbyUserID(userId);
+        res.status(HttpStatus.OK).json({ message: 'Order Summary ------>', cart: cart });
+    }
+    catch(error)
+    {
+        console.error('Cannot display order summary', error);
             next(error);  
     }
    }

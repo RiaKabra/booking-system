@@ -2,7 +2,6 @@ import HttpStatus from 'http-status-codes';
 import jwt from 'jsonwebtoken';
 import { getUserByEmail } from '../services/user.service.js'; 
 
-
 export const userAuth = (secretKey) => {
   return async (req, res, next) => {
     try {
@@ -11,24 +10,50 @@ export const userAuth = (secretKey) => {
 
       if (!bearerToken) {
         throw {
-          code: HttpStatus.BAD_REQUEST,
+          code: HttpStatus.UNAUTHORIZED,
           message: "Authorization token is required"
         };
       }
-      bearerToken = bearerToken.split(' ')[1];
-      let userDetails = jwt.verify(bearerToken, secretKey);
-      req.body.role = userDetails.role
-      console.log('user details----------', userDetails.role);
+      
+      
+      const token = bearerToken = bearerToken.split(' ')[1];
+      let userDetails = jwt.verify(token, secretKey);
+      console.log('Decoded token payload:', userDetails);
+
+      if (!userDetails.email || !userDetails.role) {
+        throw {
+          code: HttpStatus.UNAUTHORIZED,
+          message: "Invalid token payload"
+        };
+      }
+
+      const user = await getUserByEmail(userDetails.email);
+      if (!user) {
+        throw {
+          code: HttpStatus.UNAUTHORIZED,
+          message: "User not found"
+        };
+      }
+
+      
+      req.user = { 
+        id: user._id,    
+        role: user.role 
+      };
+
+      console.log('Authenticated user ID:', user._id);
+      console.log('User role:', user.role);
+      
       next();
     } catch (error) {
-      return res.status(HttpStatus.BAD_REQUEST).json({
-        code: HttpStatus.BAD_REQUEST,
-        message: "Invalid or expired token"
+      console.error('Authentication error:', error);
+      return res.status(error.code || HttpStatus.BAD_REQUEST).json({
+        code: error.code || HttpStatus.BAD_REQUEST,
+        message: error.message || "Invalid or expired token"
       });
     }
   }
 }
-
 
 
 export const roleMiddleware = async (req, res, next) => {

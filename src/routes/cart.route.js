@@ -7,6 +7,7 @@ dotenv.config();
 const router = express.Router();
 
 router.post('/get/:_id',userAuth(process.env.SECRETKEY),cartController.getUserCart);
+router.post('/order/:_id',userAuth(process.env.SECRETKEY),cartController.getUserOrder);
 router.post('/add/:_id',  userAuth(process.env.SECRETKEY),cartController.addBookToUserCart); 
 router.post('/remove/:_id',  userAuth(process.env.SECRETKEY),cartController.removeBookFromUserCart); 
 export default router;

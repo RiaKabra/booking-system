@@ -4,7 +4,7 @@ import HttpStatus from 'http-status-codes';
    export const getUserWish = async(req,res,next) => {
     try{
         const userId = req.user.id; 
-        wish = await getWishbyUserID(userId);
+        const wish = await getWishbyUserID(userId);
         res.status(HttpStatus.OK).json({ message: 'Wishlist rerieved', wishlist:wish });
     }
     catch(error)

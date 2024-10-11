@@ -4,7 +4,7 @@ export const getAll = async () => {
     return data;
   };
   
-  export const getbyID = async (value) => {
+  export const getBookbyID = async (value) => {
     const data = await Book.findOne({_id:value});
     return data;
   };
@@ -16,3 +16,5 @@ export const getAll = async () => {
   }
     return book;
   };
+
+  
